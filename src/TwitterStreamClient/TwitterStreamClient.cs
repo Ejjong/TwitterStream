@@ -19,12 +19,15 @@ namespace TwitterStreamClient
             twitterService = new TwitterService(consumerKey, consumerSecret);
             twitterService.AuthenticateWith(token, secret);
 
+Console.WriteLine("init");
             var xmlText = File.ReadAllText("Status.xml");
+Console.WriteLine("ReadAll");
             doc = XDocument.Parse(xmlText);
         }
 
         public void Start()
         {
+Console.WriteLine("Start");
             twitterService.StreamUser((streamEvent, response) =>
             {
                 if (response.StatusCode == 0)
