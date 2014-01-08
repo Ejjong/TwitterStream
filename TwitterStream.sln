@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8241A16C-4033-43FA-AA25-080893DEBE05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitterStreamClient", "src\TwitterStreamClient\TwitterStreamClient.csproj", "{0BDBD8AB-2799-49B7-BBE3-0B77AE93B410}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0BDBD8AB-2799-49B7-BBE3-0B77AE93B410}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BDBD8AB-2799-49B7-BBE3-0B77AE93B410}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BDBD8AB-2799-49B7-BBE3-0B77AE93B410}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BDBD8AB-2799-49B7-BBE3-0B77AE93B410}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0BDBD8AB-2799-49B7-BBE3-0B77AE93B410} = {8241A16C-4033-43FA-AA25-080893DEBE05}
+	EndGlobalSection
+EndGlobal
