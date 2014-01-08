@@ -32,6 +32,7 @@ namespace TwitterStreamClient
                     var message = streamEvent as TwitterUserStreamDirectMessage;
                     if (message != null)
                     {
+Console.WriteLine(message.DirectMessage.Text);
                         var riders = doc.Descendants("Riders").FirstOrDefault();
                         if(riders != null)
                         {
