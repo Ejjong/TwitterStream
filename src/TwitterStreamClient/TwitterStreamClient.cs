@@ -30,6 +30,7 @@ Console.WriteLine("ReadAll");
 Console.WriteLine("Start");
             twitterService.StreamUser((streamEvent, response) =>
             {
+                Console.WriteLine("Stream");
                 if (response.StatusCode == 0)
                 {
                     var message = streamEvent as TwitterUserStreamDirectMessage;
