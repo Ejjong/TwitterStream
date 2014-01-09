@@ -8,6 +8,7 @@ using TwitterToken;
 using Tweetinvi;
 using Streaminvi;
 using System.Xml.Linq;
+using System.IO;
 
 namespace TwitterStreamClient
 {
@@ -19,6 +20,8 @@ namespace TwitterStreamClient
         public TwitterStreamClient2(string token, string secret, string consumerKey, string consumerSecret)
         {
             _token = new Token(token, secret, consumerKey, consumerSecret);
+            var xmlText = File.ReadAllText("Status.xml");
+            doc = XDocument.Parse(xmlText);
         }
 
         public void Start()
