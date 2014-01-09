@@ -7,12 +7,15 @@ using TweetinCore.Interfaces.TwitterToken;
 using TwitterToken;
 using Tweetinvi;
 using Streaminvi;
+using System.Xml.Linq;
 
 namespace TwitterStreamClient
 {
     public class TwitterStreamClient2
     {
         IToken _token;
+        XDocument doc;
+
         public TwitterStreamClient2(string token, string secret, string consumerKey, string consumerSecret)
         {
             _token = new Token(token, secret, consumerKey, consumerSecret);
@@ -23,7 +26,28 @@ namespace TwitterStreamClient
             var stream = new UserStream(_token);
             stream.MessageReceivedFromX += (sender, args) =>
             {
-                Console.WriteLine("Message '{0}' received from {1}!", args.Value.Text, args.Value3.Id);
+                if (args == null) return;
+
+                var riders = doc.Descendants("Riders").FirstOrDefault();
+                if (riders != null)
+                {
+                    var rider = riders.Descendants("Rider").SingleOrDefault(r => r.Attribute("Id").Value == args.Value3.Id.ToString());
+                    if (rider != null)
+                    {
+                        rider.SetAttributeValue("Name", args.Value3.Name);
+                        rider.SetAttributeValue("Message", args.Value.Text);
+                        rider.SetAttributeValue("Date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    }
+                    else
+                    {
+                        riders.Add(new XElement("Rider",
+                            new XAttribute("Id", args.Value3.Id),
+                            new XAttribute("Name", args.Value3.Name),
+                            new XAttribute("Message", args.Value.Text),
+                            new XAttribute("Date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))));
+                    }
+                }
+                doc.Save("Status.xml");
             };
             stream.StartStream();
         }
