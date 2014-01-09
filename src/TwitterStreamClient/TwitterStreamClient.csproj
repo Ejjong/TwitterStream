@@ -44,19 +44,47 @@
     <Reference Include="Hammock.ClientProfile">
       <HintPath>..\..\packages\TweetSharp.2.3.1\lib\4.0\Hammock.ClientProfile.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Practices.Prism">
+      <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\Microsoft.Practices.Prism.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\TweetSharp.2.3.1\lib\4.0\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="oAuthConnection">
+      <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\oAuthConnection.dll</HintPath>
+    </Reference>
+    <Reference Include="SearchEngine">
+      <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\SearchEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Streaminvi">
+      <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\Streaminvi.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Tools">
+      <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\Tools.dll</HintPath>
+    </Reference>
+    <Reference Include="TweetinCore">
+      <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\TweetinCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Tweetinvi">
+      <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\Tweetinvi.dll</HintPath>
+    </Reference>
     <Reference Include="TweetSharp">
       <HintPath>..\..\packages\TweetSharp.2.3.1\lib\4.0\TweetSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="TwitterToken">
+      <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\TwitterToken.dll</HintPath>
+    </Reference>
+    <Reference Include="UILibrary">
+      <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\UILibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="TwitterStreamClient.cs" />
+    <Compile Include="TwitterStreamClient2.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Status.xml">
