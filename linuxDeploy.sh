@@ -1,3 +1,3 @@
 DEST=/home/ejjong/RiderStatus/
-rm -v ${DEST}* --exclude Status.*
+rm -v ${DEST}* ! -name Status*
 rsync -av --exclude Status.*  /var/TeamCity/buildAgent/work/f5a388f2ffffb4ec/output/Release/ ${DEST}
