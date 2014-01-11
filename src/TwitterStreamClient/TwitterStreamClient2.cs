@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 using TweetinCore.Interfaces;
 using TweetinCore.Interfaces.TwitterToken;
@@ -26,13 +27,14 @@ namespace TwitterStreamClient
         {
             Console.WriteLine("start");
             var stream = new UserStream(_token);
+            var curPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             stream.MessageReceivedFromX += (sender, args) =>
             {;
                 var xmlText = string.Empty;
                 Console.WriteLine("before read");
                 try
                 {
-                    xmlText = File.ReadAllText("Status.xml");
+                    xmlText = File.ReadAllText(Path.Combine(curPath,"Status.xml"));
                 }
                 catch (Exception e)
                 {
@@ -86,8 +88,8 @@ namespace TwitterStreamClient
                     }
                 }
                 Console.WriteLine("before save");
-                doc.SaveToJson("Status.json");
-                doc.Save("Status.xml");
+                doc.SaveToJson(Path.Combine(curPath, "Status.json"));
+                doc.Save(Path.Combine(curPath, "Status.xml"));
                 Console.WriteLine("after save");
             };
             stream.StartStream();
