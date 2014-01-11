@@ -28,8 +28,16 @@ namespace TwitterStreamClient
             var stream = new UserStream(_token);
             stream.MessageReceivedFromX += (sender, args) =>
             {;
+                var xmlText = string.Empty;
                 Console.WriteLine("before read");
-                var xmlText = File.ReadAllText("Status.xml");
+                try
+                {
+                    xmlText = File.ReadAllText("Status.xml");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
                 Console.WriteLine("after read");
                 var doc = XDocument.Parse(xmlText);
                 if (args == null || args.Value3.Id == null) return;
