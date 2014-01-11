@@ -17,16 +17,20 @@ namespace TwitterStreamClient
 
         public TwitterStreamClient2(string token, string secret, string consumerKey, string consumerSecret)
         {
+            Console.WriteLine("ctor");
             _token = new Token(token, secret, consumerKey, consumerSecret);
-
+            Console.WriteLine("create token");
         }
 
         public void Start()
         {
+            Console.WriteLine("start");
             var stream = new UserStream(_token);
             stream.MessageReceivedFromX += (sender, args) =>
-            {
+            {;
+                Console.WriteLine("before read");
                 var xmlText = File.ReadAllText("Status.xml");
+                Console.WriteLine("after read");
                 var doc = XDocument.Parse(xmlText);
                 if (args == null || args.Value3.Id == null) return;
 
@@ -73,8 +77,10 @@ namespace TwitterStreamClient
                         SendMessage(args.Value3.Id, strings.GetStatus(), _token);
                     }
                 }
+                Console.WriteLine("before save");
                 doc.SaveToJson("Status.json");
                 doc.Save("Status.xml");
+                Console.WriteLine("after save");
             };
             stream.StartStream();
         }
@@ -91,6 +97,7 @@ namespace TwitterStreamClient
         {
             IMessage msg = createNewMessage(receiverId, message);
             msg.Publish(token);
+            Console.WriteLine("send message");
         }
     }
 
