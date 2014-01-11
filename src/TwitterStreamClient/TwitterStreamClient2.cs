@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using TweetinCore.Interfaces;
 using TweetinCore.Interfaces.TwitterToken;
@@ -115,7 +116,8 @@ namespace TwitterStreamClient
     {
         public static void  SaveToJson(this XDocument doc, string fileName)
         {
-            string jsonText = JsonConvert.SerializeXNode(doc.FirstNode);
+            string jsonText = Regex.Replace(JsonConvert.SerializeXNode(doc.FirstNode), "(?<=\")(@)(?!.*\":\\s )",
+                string.Empty, RegexOptions.IgnoreCase);
             File.WriteAllText(fileName, jsonText);
         } 
     }
