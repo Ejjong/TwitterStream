@@ -33,73 +33,80 @@ namespace TwitterStreamClient
                 var curPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
                 stream.MessageReceivedFromX += (sender, args) =>
                 {
-                    ;
+                    if (args == null || args.Value3.Id == null) return;
+
+                    var strings = args.Value.Text.Split(',');
+                    if (strings.GetStatus() == "" && args.Value3.Id != 229481394) return;
+
                     var xmlText = string.Empty;
                     Console.WriteLine("before read");
                     try
                     {
                         xmlText = File.ReadAllText(Path.Combine(curPath, "Status.xml"));
- 
-                    Console.WriteLine("after read");
-                    var doc = XDocument.Parse(xmlText);
-                    if (args == null || args.Value3.Id == null) return;
 
-                    var strings = args.Value.Text.Split(',');
-                    var riders = doc.Descendants("Riders").FirstOrDefault();
-                    if (riders != null)
-                    {
-                        var rider =
-                            riders.Descendants("Rider")
-                                .SingleOrDefault(r => r.Attribute("Id").Value == args.Value3.Id.ToString());
-                        if (rider != null)
+                        Console.WriteLine("after read");
+                        var doc = XDocument.Parse(xmlText);
+
+                        var riders = doc.Descendants("Riders").FirstOrDefault();
+                        if (riders != null)
                         {
-                            switch (strings.GetStatus())
+                            var rider =
+                                riders.Descendants("Rider")
+                                    .SingleOrDefault(r => r.Attribute("Id").Value == args.Value3.Id.ToString());
+                            if (rider != null)
                             {
-                                case "Online":
-                                case "Riding":
-                                    rider.SetAttributeValue("Name", args.Value3.Name);
-                                    rider.SetAttributeValue("Status", strings.GetStatus());
-                                    rider.SetAttributeValue("Message", strings.GetMessage());
-                                    rider.SetAttributeValue("Date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                                    SendMessage(args.Value3.Id, strings.GetStatus(), _token);
-                                    break;
-                                case "Offline":
-                                    rider.Remove();
-                                    SendMessage(args.Value3.Id, strings.GetStatus(), _token);
-                                    break;
-                                default:
-                                    if (args.Value3.Id == 229481394)
-                                        SendMessage(args.Value3.Id, "pingtest", _token);
-                                    break;
+                                switch (strings.GetStatus())
+                                {
+                                    case "Online":
+                                    case "Riding":
+                                        rider.SetAttributeValue("Name", args.Value3.Name);
+                                        rider.SetAttributeValue("Status", strings.GetStatus());
+                                        rider.SetAttributeValue("Message", strings.GetMessage());
+                                        rider.SetAttributeValue("Date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                                        SendMessage(args.Value3.Id, strings.GetStatus(), _token);
+                                        break;
+                                    case "Offline":
+                                        rider.Remove();
+                                        SendMessage(args.Value3.Id, strings.GetStatus(), _token);
+                                        break;
+                                    default:
+                                        if (args.Value3.Id == 229481394)
+                                        {
+                                            SendMessage(args.Value3.Id, "pingtest", _token);
+                                            return;
+                                        }
+                                        break;
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (strings.GetStatus() == "Offline")
+                            else
                             {
-                                SendMessage(args.Value3.Id, "already Offline", _token);
-                                return;
+                                if (strings.GetStatus() == "Offline")
+                                {
+                                    SendMessage(args.Value3.Id, "already Offline", _token);
+                                    return;
+                                }
+                                if (strings.GetStatus() == "") return;
+
+                                riders.Add(new XElement("Rider",
+                                    new XAttribute("Id", args.Value3.Id),
+                                    new XAttribute("Name", args.Value3.Name),
+                                    new XAttribute("Status", strings.GetStatus()),
+                                    new XAttribute("Message", strings.GetMessage()),
+                                    new XAttribute("Date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))));
+                                SendMessage(args.Value3.Id, strings.GetStatus(), _token);
                             }
-                            riders.Add(new XElement("Rider",
-                                new XAttribute("Id", args.Value3.Id),
-                                new XAttribute("Name", args.Value3.Name),
-                                new XAttribute("Status", strings.GetStatus()),
-                                new XAttribute("Message", strings.GetMessage()),
-                                new XAttribute("Date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))));
-                            SendMessage(args.Value3.Id, strings.GetStatus(), _token);
+
+                            var tempRiders = riders.Descendants("Rider").ToList();
+                            var ords = tempRiders.OrderByDescending(el => el.Attribute("Date").Value).ToList();
+                            riders.RemoveAll();
+                            foreach (XElement tab in ords)
+                                riders.Add(tab);
                         }
 
-                        var tempRiders = riders.Descendants("Rider").ToList();
-                        var ords = tempRiders.OrderByDescending(el => el.Attribute("Date").Value).ToList();
-                        riders.RemoveAll();
-                        foreach(XElement tab in ords)
-                            riders.Add(tab);
-                    }
-
-                    Console.WriteLine("before save");
-                    doc.SaveToJson(Path.Combine(curPath, "Status.json"));
-                    doc.Save(Path.Combine(curPath, "Status.xml"));
-                    Console.WriteLine("after save");
+                        Console.WriteLine("before save");
+                        doc.SaveToJson(Path.Combine(curPath, "Status.json"));
+                        doc.Save(Path.Combine(curPath, "Status.xml"));
+                        Console.WriteLine("after save");
                     }
                     catch (Exception e)
                     {
@@ -133,12 +140,12 @@ namespace TwitterStreamClient
 
     internal static class XDocumentExtensions
     {
-        public static void  SaveToJson(this XDocument doc, string fileName)
+        public static void SaveToJson(this XDocument doc, string fileName)
         {
             string jsonText = Regex.Replace(JsonConvert.SerializeXNode(doc.FirstNode), "(?<=\")(@)(?!.*\":\\s )",
                 string.Empty, RegexOptions.IgnoreCase);
             File.WriteAllText(fileName, jsonText);
-        } 
+        }
     }
 
     internal static class StringArrayExtensions
