@@ -22,6 +22,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy", "deploy", "{4CA1DD34-ED61-4D09-824F-0AF66CF254FE}"
 	ProjectSection(SolutionItems) = preProject
 		linuxDeploy.sh = linuxDeploy.sh
+		linuxRestart.sh = linuxRestart.sh
 	EndProjectSection
 EndProject
 Global
