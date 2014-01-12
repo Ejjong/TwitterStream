@@ -88,7 +88,14 @@ namespace TwitterStreamClient
                                 new XAttribute("Date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))));
                             SendMessage(args.Value3.Id, strings.GetStatus(), _token);
                         }
+
+                        var tempRiders = riders.Descendants("Rider").ToList();
+                        var ords = tempRiders.OrderByDescending(el => el.Attribute("Date").Value).ToList();
+                        riders.RemoveAll();
+                        foreach(XElement tab in ords)
+                            riders.Add(tab);
                     }
+
                     Console.WriteLine("before save");
                     doc.SaveToJson(Path.Combine(curPath, "Status.json"));
                     doc.Save(Path.Combine(curPath, "Status.xml"));
