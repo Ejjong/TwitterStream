@@ -41,9 +41,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Dapper">
+      <HintPath>..\..\packages\Dapper.1.13\lib\net45\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper.SimpleCRUD">
+      <HintPath>..\..\packages\Dapper.SimpleCRUD.1.3.0\lib\net40\Dapper.SimpleCRUD.dll</HintPath>
+    </Reference>
     <Reference Include="Hammock.ClientProfile">
       <HintPath>..\..\packages\TweetSharp.2.3.1\lib\4.0\Hammock.ClientProfile.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Practices.Prism">
       <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\Microsoft.Practices.Prism.dll</HintPath>
     </Reference>
@@ -60,6 +67,8 @@
       <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\Streaminvi.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Tools">
@@ -82,9 +91,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DasUser.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="TwitterStreamClient.cs" />
     <Compile Include="TwitterStreamClient2.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Status.xml">
