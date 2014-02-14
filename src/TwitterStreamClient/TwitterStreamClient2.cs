@@ -20,21 +20,13 @@ namespace TwitterStreamClient
     {
         readonly IToken _token;
         private DbConnection _connection;
+        static TimeZoneInfo koreaTZI = TimeZoneInfo.FindSystemTimeZoneById("Korea Standard Time");
 
         public TwitterStreamClient2(string token, string secret, string consumerKey, string consumerSecret)
         {
             Console.WriteLine("ctor");
             _token = new Token(token, secret, consumerKey, consumerSecret);
             Console.WriteLine("create token");
-
-            //var r =InsertOrUpdateUser(new DasUser
-            //{
-            //    TwitterId = 1112,
-            //    Name = "Test11111111111",
-            //    Status = "Rinding",
-            //    Message = "Message",
-            //});
-            //var result = GetList();
         }
 
         int? InsertOrUpdateUser(DasUser user)
@@ -50,7 +42,7 @@ namespace TwitterStreamClient
                     updateUser.Name = user.Name;
                     updateUser.Status = user.Status;
                     updateUser.Message = user.Message;
-                    updateUser.Date = DateTime.Now;
+                    updateUser.Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, koreaTZI);
                     ret = _connection.Update(updateUser);
                 }
                 else
