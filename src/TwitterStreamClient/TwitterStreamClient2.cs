@@ -29,10 +29,10 @@ namespace TwitterStreamClient
             Console.WriteLine("create token");
         }
 
-        int? InsertOrUpdateUser(DasUser user)
+        int? InsertOrUpdateUser(DasUser user, bool isBackup = false)
         {
             int? ret;
-            using (_connection = Utilities.GetOpenConnection())
+            using (_connection = Utilities.GetOpenConnection(isBackup))
             {
                 var result = _connection.GetList<DasUser>(new { TwitterId = user.TwitterId });
 
@@ -47,6 +47,7 @@ namespace TwitterStreamClient
                 }
                 else
                 {
+                    user.Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, koreaTZI);
                     ret = _connection.Insert(user);
                 }
             }
@@ -71,7 +72,6 @@ namespace TwitterStreamClient
             {
                 Console.WriteLine("start");
                 var stream = new UserStream(_token);
-                //var curPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
                 stream.MessageReceivedFromX += (sender, args) =>
                 {
                     if (args == null || args.Value3.Id == null) return;
@@ -79,17 +79,8 @@ namespace TwitterStreamClient
                     var strings = args.Value.Text.Split(',');
                     if (strings.GetStatus() == "" && args.Value3.Id != 229481394) return;
 
-                    //var xmlText = string.Empty;
-                    //Console.WriteLine("before read");
                     try
                     {
-                        //xmlText = File.ReadAllText(Path.Combine(curPath, "Status.xml"));
-
-                        //Console.WriteLine("after read");
-                        //var doc = XDocument.Parse(xmlText);
-
-                        //var riders = doc.Descendants("Riders").FirstOrDefault();
-
                         var twitterId = args.Value3.Id;
                         var user = new DasUser
                         {
@@ -100,66 +91,7 @@ namespace TwitterStreamClient
                         };
                         InsertOrUpdateUser(user);
                         SendMessage(args.Value3.Id, strings.GetStatus(), _token);
-
-                        //if (riders != null)
-                        //{
-                        //    var rider =
-                        //        riders.Descendants("Rider")
-                        //            .SingleOrDefault(r => r.Attribute("Id").Value == args.Value3.Id.ToString());
-                        //    if (rider != null)
-                        //    {
-                        //        switch (strings.GetStatus())
-                        //        {
-                        //            case "Online":
-                        //            case "Riding":
-                        //                rider.SetAttributeValue("Name", args.Value3.Name);
-                        //                rider.SetAttributeValue("Status", strings.GetStatus());
-                        //                rider.SetAttributeValue("Message", strings.GetMessage());
-                        //                rider.SetAttributeValue("Date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                        //                SendMessage(args.Value3.Id, strings.GetStatus(), _token);
-                        //                break;
-                        //            case "Offline":
-                        //                rider.Remove();
-                        //                SendMessage(args.Value3.Id, strings.GetStatus(), _token);
-                        //                break;
-                        //            default:
-                        //                if (args.Value3.Id == 229481394)
-                        //                {
-                        //                    SendMessage(args.Value3.Id, "pingtest", _token);
-                        //                    return;
-                        //                }
-                        //                break;
-                        //        }
-                        //    }
-                        //    else
-                        //    {
-                        //        if (strings.GetStatus() == "Offline")
-                        //        {
-                        //            SendMessage(args.Value3.Id, "already Offline", _token);
-                        //            return;
-                        //        }
-                        //        if (strings.GetStatus() == "") return;
-
-                        //        riders.Add(new XElement("Rider",
-                        //            new XAttribute("Id", args.Value3.Id),
-                        //            new XAttribute("Name", args.Value3.Name),
-                        //            new XAttribute("Status", strings.GetStatus()),
-                        //            new XAttribute("Message", strings.GetMessage()),
-                        //            new XAttribute("Date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))));
-                        //        SendMessage(args.Value3.Id, strings.GetStatus(), _token);
-                        //    }
-
-                        //    var tempRiders = riders.Descendants("Rider").ToList();
-                        //    var ords = tempRiders.OrderByDescending(el => el.Attribute("Date").Value).ToList();
-                        //    riders.RemoveAll();
-                        //    foreach (XElement tab in ords)
-                        //        riders.Add(tab);
-                       // }
-
-                        //Console.WriteLine("before save");
-                        //doc.SaveToJson(Path.Combine(curPath, "Status.json"));
-                        //doc.Save(Path.Combine(curPath, "Status.xml"));
-                        //Console.WriteLine("after save");
+                        InsertOrUpdateUser(user, true);
                     }
                     catch (Exception e)
                     {
