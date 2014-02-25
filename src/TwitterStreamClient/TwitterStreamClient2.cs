@@ -81,6 +81,7 @@ namespace TwitterStreamClient
 
                     try
                     {
+                        Console.WriteLine("try");
                         var twitterId = args.Value3.Id;
                         var user = new DasUser
                         {
@@ -90,8 +91,10 @@ namespace TwitterStreamClient
                             Message = strings.GetMessage()
                         };
                         InsertOrUpdateUser(user);
+                        Console.WriteLine("insert or update user");
                         SendMessage(args.Value3.Id, strings.GetStatus(), _token);
-                        InsertOrUpdateUser(user, true);
+                        Console.WriteLine("send message");
+                        //InsertOrUpdateUser(user, true);
                     }
                     catch (Exception e)
                     {
@@ -99,6 +102,7 @@ namespace TwitterStreamClient
                     }
                 };
                 stream.StartStream();
+                Console.WriteLine("start stream");
             }
             catch (Exception ex)
             {
