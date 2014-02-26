@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 using TweetinCore.Interfaces;
 using TweetinCore.Interfaces.TwitterToken;
 using Tweetinvi;
@@ -12,15 +11,18 @@ using System.Xml.Linq;
 using System.IO;
 using System.Data.Common;
 using System.Collections.Generic;
-using Dapper;
+using Mindscape.Raygun4Net;
+using System.Data;
+using ServiceStack.OrmLite;
 
 namespace TwitterStreamClient
 {
     public class TwitterStreamClient2
     {
         readonly IToken _token;
-        private DbConnection _connection;
+        private IDbConnection _connection;
         static TimeZoneInfo koreaTZI = TimeZoneInfo.FindSystemTimeZoneById("Korea Standard Time");
+        RaygunClient _raygunClient = new RaygunClient("xmDvb3dv/nA8cfGeaqLV8Q==");
 
         public TwitterStreamClient2(string token, string secret, string consumerKey, string consumerSecret)
         {
@@ -34,7 +36,7 @@ namespace TwitterStreamClient
             int? ret;
             using (_connection = Utilities.GetOpenConnection(isBackup))
             {
-                var result = _connection.GetList<DasUser>(new { TwitterId = user.TwitterId });
+                var result = _connection.Where<DasUser>(new { TwitterId = user.TwitterId });
 
                 var updateUser = result.SingleOrDefault();
                 if (updateUser != null)
@@ -48,7 +50,7 @@ namespace TwitterStreamClient
                 else
                 {
                     user.Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, koreaTZI);
-                    ret = _connection.Insert(user);
+                    ret = (int)_connection.Insert<DasUser>(user);
                 }
             }
 
@@ -60,7 +62,7 @@ namespace TwitterStreamClient
             IEnumerable<DasUser> result;
             using (_connection = Utilities.GetOpenConnection())
             {
-                result = _connection.GetList<DasUser>();
+                result = _connection.Select<DasUser>();
             }
 
             return result;
@@ -98,6 +100,7 @@ namespace TwitterStreamClient
                     }
                     catch (Exception e)
                     {
+                        _raygunClient.Send(e);
                         Console.WriteLine(e.Message);
                     }
                 };
@@ -106,6 +109,7 @@ namespace TwitterStreamClient
             }
             catch (Exception ex)
             {
+                _raygunClient.Send(ex);
                 Console.WriteLine(ex.Message);
             }
         }
@@ -124,16 +128,6 @@ namespace TwitterStreamClient
             IMessage msg = createNewMessage(receiverId, message);
             msg.Publish(token);
             Console.WriteLine("after send message");
-        }
-    }
-
-    internal static class XDocumentExtensions
-    {
-        public static void SaveToJson(this XDocument doc, string fileName)
-        {
-            string jsonText = Regex.Replace(JsonConvert.SerializeXNode(doc.FirstNode), "(?<=\")(@)(?!.*\":\\s )",
-                string.Empty, RegexOptions.IgnoreCase);
-            File.WriteAllText(fileName, jsonText);
         }
     }
 

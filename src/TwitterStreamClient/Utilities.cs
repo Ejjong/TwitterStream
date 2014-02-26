@@ -1,6 +1,8 @@
-﻿using System;
+﻿using ServiceStack.OrmLite;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -15,12 +17,15 @@ namespace TwitterStreamClient
         private static readonly string ConnectionString = Connection.ConnectionString;
         private static readonly string BackupConnectionString = BackupConnection.ConnectionString;
 
-        public static SqlConnection GetOpenConnection(bool isBackup = false)
+        public static IDbConnection GetOpenConnection(bool isBackup = false)
         {
-            var connection = new SqlConnection((isBackup ? BackupConnectionString : ConnectionString));
-            connection.Open();
+            //var connection = new SqlConnection((isBackup ? BackupConnectionString : ConnectionString));
+            //connection.Open();
 
-            return connection;
+            //return connection;
+
+            var dbFactory = new OrmLiteConnectionFactory(ConnectionString, SqlServerDialect.Provider);
+            return dbFactory.OpenDbConnection();
         }
     }
 }

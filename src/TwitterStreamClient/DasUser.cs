@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿
+using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TwitterStreamClient
 {
-    [Table("DasUser")]
+    [Alias("dasuser")]
     public class DasUser
     {
         public int Id { get; set; }
