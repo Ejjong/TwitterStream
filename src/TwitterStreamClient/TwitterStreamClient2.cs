@@ -18,72 +18,54 @@ using ServiceStack.OrmLite;
 namespace TwitterStreamClient
 {
     public class TwitterStreamClient2
-    {
-        readonly IToken _token;
-        private IDbConnection _connection;
+    {    
         static TimeZoneInfo koreaTZI = TimeZoneInfo.FindSystemTimeZoneById("Korea Standard Time");
         RaygunClient _raygunClient = new RaygunClient("xmDvb3dv/nA8cfGeaqLV8Q==");
+        long masterId = 229481394;
 
-        public TwitterStreamClient2(string token, string secret, string consumerKey, string consumerSecret)
+        readonly string token;
+        readonly string secret;
+        readonly string consumerKey;
+        readonly string consumerSecret;
+        readonly IDasUserRepository dasRepo;
+
+        public TwitterStreamClient2(string token, string secret, string consumerKey, string consumerSecret, IDasUserRepository dasRepo)
         {
+            this.token = token;
+            this.secret = secret;
+            this.consumerKey = consumerKey;
+            this.consumerSecret = consumerSecret;
+            this.dasRepo = dasRepo;
             Console.WriteLine("ctor");
-            _token = new Token(token, secret, consumerKey, consumerSecret);
+        }
+
+        IToken CreateToken(string token, string secret, string consumerKey, string consumerSecret)
+        {
+            return new Token(token, secret, consumerKey, consumerSecret);
             Console.WriteLine("create token");
-        }
-
-        int? InsertOrUpdateUser(DasUser user, bool isBackup = false)
-        {
-            int? ret;
-            using (_connection = Utilities.GetOpenConnection(isBackup))
-            {
-                var result = _connection.Where<DasUser>(new { TwitterId = user.TwitterId });
-
-                var updateUser = result.SingleOrDefault();
-                if (updateUser != null)
-                {
-                    updateUser.Name = user.Name;
-                    updateUser.Status = user.Status;
-                    updateUser.Message = user.Message;
-                    updateUser.Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, koreaTZI);
-                    ret = _connection.Update(updateUser);
-                }
-                else
-                {
-                    user.Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, koreaTZI);
-                    ret = (int)_connection.Insert<DasUser>(user);
-                }
-            }
-
-            return ret;
-        }
-
-        IEnumerable<DasUser> GetList()
-        {
-            IEnumerable<DasUser> result;
-            using (_connection = Utilities.GetOpenConnection())
-            {
-                result = _connection.Select<DasUser>();
-            }
-
-            return result;
         }
 
         public void Start()
         {
+            var token = CreateToken(this.token, this.secret, this.consumerKey, this.consumerSecret);
+            OnStart(token);
+        }
+
+        internal void OnStart(IToken _token)
+        {
             try
             {
-                Console.WriteLine("start");
                 var stream = new UserStream(_token);
+                Console.WriteLine("create user stream");
                 stream.MessageReceivedFromX += (sender, args) =>
                 {
                     if (args == null || args.Value3.Id == null) return;
 
                     var strings = args.Value.Text.Split(',');
-                    if (strings.GetStatus() == "" && args.Value3.Id != 229481394) return;
+                    if (strings.GetStatus() == "" && args.Value3.Id != masterId) return;
 
                     try
                     {
-                        Console.WriteLine("try");
                         var twitterId = args.Value3.Id;
                         var user = new DasUser
                         {
@@ -92,16 +74,17 @@ namespace TwitterStreamClient
                             Status = strings.GetStatus(),
                             Message = strings.GetMessage()
                         };
-                        InsertOrUpdateUser(user);
+                        dasRepo.InsertOrUpate(user);
                         Console.WriteLine("insert or update user");
                         SendMessage(args.Value3.Id, strings.GetStatus(), _token);
                         Console.WriteLine("send message");
-                        //InsertOrUpdateUser(user, true);
                     }
                     catch (Exception e)
                     {
+                        Console.WriteLine("inner exception");
                         _raygunClient.Send(e);
                         Console.WriteLine(e.Message);
+                        Start();
                     }
                 };
                 stream.StartStream();
@@ -109,25 +92,27 @@ namespace TwitterStreamClient
             }
             catch (Exception ex)
             {
+                Console.WriteLine("root exception");
                 _raygunClient.Send(ex);
                 Console.WriteLine(ex.Message);
+                Start();
             }
         }
 
-        private static IMessage createNewMessage(long? receiverId, string message)
+        private static IMessage CreateNewMessage(long? receiverId, string message)
         {
             IUser receiver = new User(receiverId);
             IMessage msg = new Message(message, receiver);
+            Console.WriteLine("create new message");
 
             return msg;
         }
 
         private static void SendMessage(long? receiverId, string message, IToken token)
         {
-            Console.WriteLine("before send message");
-            IMessage msg = createNewMessage(receiverId, message);
+            IMessage msg = CreateNewMessage(receiverId, message);
             msg.Publish(token);
-            Console.WriteLine("after send message");
+            Console.WriteLine("send message");
         }
     }
 

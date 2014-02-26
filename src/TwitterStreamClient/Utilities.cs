@@ -10,22 +10,52 @@ using System.Threading.Tasks;
 
 namespace TwitterStreamClient
 {
-    public class Utilities
+    public static class Utilities
     {
-        private static readonly ConnectionStringSettings Connection = ConfigurationManager.ConnectionStrings["nancyDb"];
-        private static readonly ConnectionStringSettings BackupConnection = ConfigurationManager.ConnectionStrings["apphbDb"];
-        private static readonly string ConnectionString = Connection.ConnectionString;
-        private static readonly string BackupConnectionString = BackupConnection.ConnectionString;
+        private static readonly IConfig config = new Config();
+        private static readonly string ConnectionString = config.Get("connectionString");
 
-        public static IDbConnection GetOpenConnection(bool isBackup = false)
+        public static IDbConnection GetOpenConnection()
         {
-            //var connection = new SqlConnection((isBackup ? BackupConnectionString : ConnectionString));
-            //connection.Open();
-
-            //return connection;
-
-            var dbFactory = new OrmLiteConnectionFactory(ConnectionString, SqlServerDialect.Provider);
+            string connString = string.Empty;
+            IOrmLiteDialectProvider provider = null;
+            if (ConnectionString.StartsWith("postgres://"))
+            {
+                connString = GenerateConnectionString(connString);
+                provider = PostgreSqlDialect.Provider;
+            }
+            else
+            {
+                connString = ConnectionString;
+                var providerString = config.Get("provider");
+                switch (providerString)
+                {
+                    case "sqlserver":
+                        provider = SqlServerDialect.Provider;
+                        break;
+                    default :
+                        break;
+                }
+            }
+            var dbFactory = new OrmLiteConnectionFactory(connString, provider);
+           
             return dbFactory.OpenDbConnection();
         }
+
+        internal static string GenerateConnectionString(string postgreUrl)
+        {
+            var uriString = postgreUrl;
+            var uri = new Uri(uriString);
+            var db = uri.AbsolutePath.Trim('/');
+            var user = uri.UserInfo.Split(':')[0];
+            var passwd = uri.UserInfo.Split(':')[1];
+            var port = uri.Port > 0 ? uri.Port : 5432;
+            var connStr = string.Format("Server={0};Database={1};User Id={2};Password={3};Port={4}",
+                uri.Host, db, user, passwd, port);
+
+            return connStr;
+        }
+
+        public static TimeZoneInfo koreaTZI = TimeZoneInfo.FindSystemTimeZoneById("Korea Standard Time");
     }
 }
