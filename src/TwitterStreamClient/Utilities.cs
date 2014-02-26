@@ -21,8 +21,13 @@ namespace TwitterStreamClient
             IOrmLiteDialectProvider provider = null;
             if (ConnectionString.StartsWith("postgres://"))
             {
-                connString = GenerateConnectionString(connString);
+                connString = GenerateConnectionStringForPostgreSQL(connString);
                 provider = PostgreSqlDialect.Provider;
+            }
+            else if (ConnectionString.StartsWith("sqlserver://"))
+            {
+                connString = GenerationConnectionStringForSqlServer(connString);
+                provider = SqlServerDialect.Provider;
             }
             else
             {
@@ -30,10 +35,13 @@ namespace TwitterStreamClient
                 var providerString = config.Get("provider");
                 switch (providerString)
                 {
+                    case "postgres":
+                        provider = PostgreSqlDialect.Provider;
+                        break;
                     case "sqlserver":
                         provider = SqlServerDialect.Provider;
                         break;
-                    default :
+                    default:
                         break;
                 }
             }
@@ -42,7 +50,7 @@ namespace TwitterStreamClient
             return dbFactory.OpenDbConnection();
         }
 
-        internal static string GenerateConnectionString(string postgreUrl)
+        internal static string GenerateConnectionStringForPostgreSQL(string postgreUrl)
         {
             var uriString = postgreUrl;
             var uri = new Uri(uriString);
@@ -54,6 +62,20 @@ namespace TwitterStreamClient
                 uri.Host, db, user, passwd, port);
 
             return connStr;
+        }
+
+        internal static string GenerationConnectionStringForSqlServer(string sqlServerUrl)
+        {
+            var uri = new Uri(sqlServerUrl);
+            var connectionString = new SqlConnectionStringBuilder
+            {
+                DataSource = uri.Host,
+                InitialCatalog = uri.AbsolutePath.Trim('/'),
+                UserID = uri.UserInfo.Split(':').First(),
+                Password = uri.UserInfo.Split(':').Last(),
+            }.ConnectionString;
+
+            return connectionString;
         }
 
         public static TimeZoneInfo koreaTZI = TimeZoneInfo.FindSystemTimeZoneById("Korea Standard Time");

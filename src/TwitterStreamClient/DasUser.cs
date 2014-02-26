@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace TwitterStreamClient
 {
-    [CompositeIndex("id", "twitterid", Unique = true)]
     [Alias("dasuser")]
     public class DasUser
     {
-        [AutoIncrement]
-        public int Id { get; set; }
-        [Alias("twitterid")]
+        [PrimaryKey]
         public int TwitterId { get; set; }
-        public string Name {get; set;}
-        public string Status {get; set;}
-        public string Message {get; set;}
+        [StringLength(40)]
+        public string Name { get; set; }
+        [StringLength(20)]
+        public string Status { get; set; }
+        [StringLength(280)]
+        public string Message { get; set; }
         public DateTime? Date { get; set; }
     }
 }
