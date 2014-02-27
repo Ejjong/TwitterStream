@@ -41,6 +41,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Hammock.ClientProfile">
+      <HintPath>..\..\packages\TweetSharp.2.3.1\lib\4.0\Hammock.ClientProfile.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Practices.Prism">
       <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\Microsoft.Practices.Prism.dll</HintPath>
@@ -50,6 +53,9 @@
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>..\..\packages\Npgsql.2.0.14.3\lib\net45\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\TweetSharp.2.3.1\lib\4.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Npgsql">
       <HintPath>..\..\packages\Npgsql.2.0.14.3\lib\net45\Npgsql.dll</HintPath>
@@ -94,6 +100,9 @@
     </Reference>
     <Reference Include="Tweetinvi">
       <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\Tweetinvi.dll</HintPath>
+    </Reference>
+    <Reference Include="TweetSharp">
+      <HintPath>..\..\packages\TweetSharp.2.3.1\lib\4.0\TweetSharp.dll</HintPath>
     </Reference>
     <Reference Include="TwitterToken">
       <HintPath>..\..\packages\TweetinviAPI.0.8.3.22\lib\TwitterToken.dll</HintPath>
