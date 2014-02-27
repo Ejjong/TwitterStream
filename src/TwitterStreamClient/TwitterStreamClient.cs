@@ -47,6 +47,8 @@ namespace TwitterStreamClient
                 twitterService.CancelStreaming();
                 twitterService = null;
 
+                Console.WriteLine("Start Exception!!!");
+                _raygunClient.Send(e);
                 CreateService();
                 OnStart();
             }
@@ -79,6 +81,7 @@ namespace TwitterStreamClient
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine("StreamUser Exception!!!");
                             _raygunClient.Send(e);
                             Console.WriteLine(e.Message);
                         }
