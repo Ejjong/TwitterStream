@@ -1,4 +1,3 @@
-﻿using Mindscape.Raygun4Net;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +11,6 @@ namespace TwitterStreamClient
 {
     public class TwitterStreamClient
     {
-        RaygunClient _raygunClient = new RaygunClient("xmDvb3dv/nA8cfGeaqLV8Q==");
         TwitterService twitterService;
         IDasUserRepository dasRepo;
         readonly string token;
@@ -48,7 +46,6 @@ namespace TwitterStreamClient
                 twitterService = null;
 
                 Console.WriteLine("Start Exception!!!");
-                _raygunClient.Send(e);
                 CreateService();
                 OnStart();
             }
@@ -82,7 +79,6 @@ namespace TwitterStreamClient
                         catch (Exception e)
                         {
                             Console.WriteLine("StreamUser Exception!!!");
-                            _raygunClient.Send(e);
                             Console.WriteLine(e.Message);
                         }
                     }
