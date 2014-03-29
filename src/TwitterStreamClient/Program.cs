@@ -31,9 +31,11 @@ namespace TwitterStreamClient
 
             var block = new AutoResetEvent(false);
 
+            Console.WriteLine("tsClient Start");
             tsClient.Start();
-
+            Console.WriteLine("block waitOne");
             block.WaitOne();
+            Console.WriteLine("block end");
         }
     }
 }
