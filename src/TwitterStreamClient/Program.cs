@@ -30,7 +30,7 @@ namespace TwitterStreamClient
             tsClient.Start();
             Console.WriteLine("block waitOne");
             block.WaitOne();
-            Console.WriteLine("block end");
+            Console.WriteLine("block end"); 
         }
     }
 }
