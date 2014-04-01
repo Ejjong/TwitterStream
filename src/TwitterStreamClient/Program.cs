@@ -11,16 +11,11 @@ namespace TwitterStreamClient
     {
         static void Main(string[] args)
         {
-            string token = "2276962602-nAw6FGdvi0znOodwi3bKk6UA7KVMN25Sz4hLhbo";
-            string secret = "OTkcTIO1ndAIWvt2s6zPbVHrOviSSbUN9p3v6xeT2LSyu";
-            string consumerKey = "gjj9HQM8FfHKadq97K3g";
-            string consumerSecret = "9rD3gfrCT6AzOrSa0ras9dlzlbgLH6RWTGq3ry9uPc0";
-            //var tsClient = new TwitterStreamClient2(
-            //    token, 
-            //    secret, 
-            //    consumerKey, 
-            //    consumerSecret,
-            //    new DasUserRepository());
+            IConfig config = new Config();
+            string token = config.Get("token");
+            string secret = config.Get("secret");
+            string consumerKey = config.Get("consumerKey");
+            string consumerSecret = config.Get("consumerSecret");
 
             var tsClient = new TwitterStreamClient(
                token,
